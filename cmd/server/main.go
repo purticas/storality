@@ -4,29 +4,20 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"storality/admin"
+	"storality/app"
 )
 
 const port = ":3000"
 
-func index(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Storality CMS"))
-}
-
-func pageView(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("ViewPage"))
-}
-
-func pageCreate(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Create Page"))
-}
-
 func main() {
-	fmt.Printf("Runing server on %s\n", port)
-	mux := http.NewServeMux()
-	mux.HandleFunc("/{$}", index)
-	mux.HandleFunc("/page/view", pageView)
-	mux.HandleFunc("/page/create", pageCreate)
+	router := http.NewServeMux()
+	app := app.Init(router)
+	admin.Serve(router)
 
-	err := http.ListenAndServe(port, mux)
-	log.Fatal(err)
+	fmt.Printf("Runing server on %s\n", port)
+	err := http.ListenAndServe(port, router)
+	if(err != nil) {
+		log.Fatal(err)
+	}
 }
